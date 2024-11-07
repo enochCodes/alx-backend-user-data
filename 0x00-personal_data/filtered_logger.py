@@ -4,9 +4,8 @@ return logger object with filter."""
 import logging
 import re
 from typing import List
-import os
+from os import environ
 import mysql.connector
-from mysql.connector.connection import MySQLConnection
 
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
@@ -64,18 +63,15 @@ def get_logger() -> logging.Logger:
 
     return logger
 
-def get_db() -> MySQLConnection:
-    """Establishes and returns a connection to the database."""
-    # Retrieve environment variables with default values
-    username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
-    password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
-    host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
-    database = os.getenv("PERSONAL_DATA_DB_NAME")
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """ Returns a connector to a MySQL database """
+    username = environ.get("PERSONAL_DATA_DB_USERNAME", "root")
+    password = environ.get("PERSONAL_DATA_DB_PASSWORD", "")
+    host = environ.get("PERSONAL_DATA_DB_HOST", "localhost")
+    db_name = environ.get("PERSONAL_DATA_DB_NAME")
 
-    # Connect to the database and return the connection object
-    return mysql.connector.connect(
-        user=username,
-        password=password,
-        host=host,
-        database=database
-    )
+    cnx = mysql.connector.connection.MySQLConnection(user=username,
+                                                     password=password,
+                                                     host=host,
+                                                     database=db_name)
+    return cnx
